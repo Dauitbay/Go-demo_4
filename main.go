@@ -2,14 +2,33 @@ package main
 
 import "fmt"
 
-func main() {
-	a := [4]int{1, 2, 3, 4}
-	reverse(&a)
-	fmt.Println(a)
+type account struct {
+	login string
+	password string
+	url string
 }
 
-func reverse(arr *[4]int) {
-	for index, value := range *arr {
-		(*arr)[len(arr) - 1 - index] = value
+func main() {
+	login := prompData("Enter your login: ")
+	password := prompData("Enter your password")
+	url := prompData("Enter your url")
+
+	myAccount := account {
+		password: password,
+		url: url,
+		login: login,
 	}
+	outputPassword(&myAccount)
+}
+
+func prompData(promp string) string {
+	fmt.Print(promp + " ")
+	var res string
+	fmt.Scan(&res)
+	return res
+}
+
+func outputPassword(acc *account) {
+	fmt.Println(acc)
+	fmt.Println(acc.login, acc.password, acc.url)
 }
