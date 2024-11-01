@@ -24,19 +24,23 @@ func (acc *account) generatePassword(n int) {
 	acc.password = string(res)
 }
 
+func newAccount(login, password, url string) *account {
+	return &account{
+		password: password,
+		url: url,
+		login: login,
+	}
+}
+
 var letterRunes = []rune("abcdfghijklmnopqrstuvwxyzABCDFGHIJKLMNOPQRSTUVWXYZ1234567890-*!")
 
 func main() {
 	
 	login := prompData("Enter your login: ")
-	// password := prompData("Enter your password")
+	password := prompData("Enter your password")
 	url := prompData("Enter your url")
 
-	myAccount := account {
-		// password: password,
-		url: url,
-		login: login,
-	}
+	myAccount := newAccount(login, password, url)
 	var newP int = 12
 	myAccount.generatePassword(newP)
 	myAccount.outputPassword()
