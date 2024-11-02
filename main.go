@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"demo/password/account"
 )
 
 func main() {
@@ -10,12 +11,13 @@ func main() {
 	password := prompData("Enter your password")
 	url := prompData("Enter your url")
 
-	myAccount, err := newAccountWithTimeStamp(login, password, url)
+	myAccount, err := account.NewAccountWithTimeStamp(login, password, url)
 	if err != nil {
 		fmt.Println("Invalid url or login")
 		return
 	}
-	myAccount.acc.outputPassword()
+	myAccount.OutputPassword()
+	fmt.Println(myAccount)
 }
 
 func prompData(promp string) string {
