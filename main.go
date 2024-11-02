@@ -8,6 +8,7 @@ import (
 
 func main() {
 	files.WriteFile("Hello i am file", "file.txt")
+	files.ReadFile()
 	login := prompData("Enter your login: ")
 	password := prompData("Enter your password")
 	url := prompData("Enter your url")
