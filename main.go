@@ -1,15 +1,26 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
-	a := [4]int{1, 2, 3, 4}
-	reverse(&a)
-	fmt.Println(a)
+
+	login := prompData("Enter your login: ")
+	password := prompData("Enter your password")
+	url := prompData("Enter your url")
+
+	myAccount, err := newAccountWithTimeStamp(login, password, url)
+	if err != nil {
+		fmt.Println("Invalid url or login")
+		return
+	}
+	myAccount.acc.outputPassword()
 }
 
-func reverse(arr *[4]int) {
-	for index, value := range *arr {
-		(*arr)[len(arr) - 1 - index] = value
-	}
+func prompData(promp string) string {
+	fmt.Print(promp + " ")
+	var res string
+	fmt.Scanln(&res)
+	return res
 }
