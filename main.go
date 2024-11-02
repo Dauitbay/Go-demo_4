@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"demo/password/account"
+	"demo/password/files"
+	"fmt"
 )
 
 func main() {
-
+	files.WriteFile("Hello i am file", "file.txt")
 	login := prompData("Enter your login: ")
 	password := prompData("Enter your password")
 	url := prompData("Enter your url")
@@ -17,6 +18,7 @@ func main() {
 		return
 	}
 	myAccount.OutputPassword()
+	
 	fmt.Println(myAccount)
 }
 
