@@ -1,29 +1,34 @@
 package account
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math/rand/v2"
 	"net/url"
 	"time"
+
 	"github.com/fatih/color"
 )
 
 type Account struct {
-	login    string
-	password string
-	url      string
-}
-
-type accountWithTimeStamp struct {
-	createdAt time.Time
-	updatedAt time.Time
-	Account
+	Login     string    `json:"login"`
+	Password  string    `json:"password"`
+	Url       string    `json:"url"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 func (acc *Account) OutputPassword() {
-	color.Blue(acc.login)
-	fmt.Println(acc.password, acc.url)
+	color.Blue(acc.Login)
+	fmt.Println(acc.Password, acc.Url)
+}
+func (acc *Account) ToBytes() ([]byte, error) {
+	file, err := json.Marshal(acc)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
 }
 
 func (acc *Account) generatePassword(n int) {
@@ -31,10 +36,10 @@ func (acc *Account) generatePassword(n int) {
 	for i := range res {
 		res[i] = letterRunes[rand.IntN(len(letterRunes))]
 	}
-	acc.password = string(res)
+	acc.Password = string(res)
 }
 
-func NewAccountWithTimeStamp(login, password, urlString string) (*accountWithTimeStamp, error) {
+func NewAccount(login, password, urlString string) (*Account, error) {
 	if login == "" {
 		return nil, errors.New("INVALID LOGIN")
 	}
@@ -42,16 +47,13 @@ func NewAccountWithTimeStamp(login, password, urlString string) (*accountWithTim
 	if err != nil {
 		return nil, errors.New("INVALID URL")
 	}
-	newAcc := &accountWithTimeStamp{
-		createdAt: time.Now(),
-		updatedAt: time.Now(),
-		Account : Account{
-			login:    login,
-			password: password,
-			url:      urlString,
-		},
+	newAcc := &Account{
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Login:     login,
+		Password:  password,
+		Url:       urlString,
 	}
-
 	if password == "" {
 		var newP int = 12
 		newAcc.generatePassword(newP)
@@ -61,6 +63,8 @@ func NewAccountWithTimeStamp(login, password, urlString string) (*accountWithTim
 
 var letterRunes = []rune("abcdfghijklmnopqrstuvwxyzABCDFGHIJKLMNOPQRSTUVWXYZ1234567890-*!")
 
+// field, _ := reflect.TypeOf(newAcc).Elem().FieldByName("login")
+// fmt.Println(string(field.Tag))
 
 // func newAccount(login, password, urlString string) (*account, error) {
 // 	if login == "" {

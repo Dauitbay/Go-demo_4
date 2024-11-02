@@ -7,20 +7,27 @@ import (
 )
 
 func main() {
-	files.WriteFile("Hello i am file", "file.txt")
-	files.ReadFile()
+	createAccount()
+}
+
+func createAccount() {
+	// files.WriteFile("Hello i am file", "file.txt")
+	// files.ReadFile()
 	login := prompData("Enter your login: ")
 	password := prompData("Enter your password")
 	url := prompData("Enter your url")
 
-	myAccount, err := account.NewAccountWithTimeStamp(login, password, url)
+	myAccount, err := account.NewAccount(login, password, url)
 	if err != nil {
 		fmt.Println("Invalid url or login")
 		return
 	}
-	myAccount.OutputPassword()
-	
-	fmt.Println(myAccount)
+	file, err := myAccount.ToBytes()
+	if err != nil {
+		fmt.Println("Could not convert to JSON")
+		return
+	}
+	files.WriteFile(file, "data.json")
 }
 
 func prompData(promp string) string {
