@@ -49,8 +49,14 @@ func findAccount(vault *account.Vault) {
 	}
 }
 
-func deleteAccount() {
-
+func deleteAccount(vault *account.Vault) {
+	url := prompData("Enter url for search")
+	isDeleted := vault.DeleteAccountByUrl(url)
+	if isDeleted {
+		color.Green("Deleted")
+	} else {
+		color.Red("Not found")
+	}
 }
 func createAccount(vault *account.Vault) {
 	// files.WriteFile("Hello i am file", "file.txt")
