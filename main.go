@@ -19,7 +19,7 @@ Menu:
 		case 2:
 			findAccount(vault)
 		case 3:
-			deleteAccount()
+			deleteAccount(vault)
 		default:
 			break Menu
 		}
