@@ -18,8 +18,10 @@ type Account struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-func (acc *Account) OutputPassword() {
+func (acc *Account) Output() {
 	color.Blue(acc.Login)
+	color.Blue(acc.Password)
+	color.Blue(acc.Url)
 	fmt.Println(acc.Password, acc.Url)
 }
 
