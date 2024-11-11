@@ -2,6 +2,7 @@ package main
 
 import (
 	"demo/password/account"
+	"demo/password/files"
 	"fmt"
 
 	"github.com/fatih/color"
@@ -9,7 +10,7 @@ import (
 
 func main() {
 	fmt.Println("Manager of passwords")
-	vault := account.NewVault()
+	vault := account.NewVault(files.NewJsonDb("data.json"))
 Menu:
 	for {
 		variant := getMenu()
@@ -38,7 +39,7 @@ func getMenu() int {
 	return variant
 }
 
-func findAccount(vault *account.Vault) {
+func findAccount(vault *account.VaultWithDb) {
 	url := prompData("Enter url for search")
 	accounts := vault.FindAccountsByUrl(url)
 	if len(accounts) == 0 {
@@ -49,7 +50,7 @@ func findAccount(vault *account.Vault) {
 	}
 }
 
-func deleteAccount(vault *account.Vault) {
+func deleteAccount(vault *account.VaultWithDb) {
 	url := prompData("Enter url for search")
 	isDeleted := vault.DeleteAccountByUrl(url)
 	if isDeleted {
@@ -58,7 +59,7 @@ func deleteAccount(vault *account.Vault) {
 		color.Red("Not found")
 	}
 }
-func createAccount(vault *account.Vault) {
+func createAccount(vault *account.VaultWithDb) {
 	// files.WriteFile("Hello i am file", "file.txt")
 	// files.ReadFile()
 	login := prompData("Enter your login")
