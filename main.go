@@ -14,13 +14,18 @@ func main() {
 	vault := account.NewVault(files.NewJsonDb("data.json"))
 Menu:
 	for {
-		variant := getMenu()
+		variant := prompData([]string{
+			"1. Create an account",
+			"2. Search an account",
+			"3. Delete an account",
+			"4. Exit",
+		})
 		switch variant {
-		case 1:
+		case "1":
 			createAccount(vault)
-		case 2:
+		case "2":
 			findAccount(vault)
-		case 3:
+		case "3":
 			deleteAccount(vault)
 		default:
 			break Menu
@@ -29,19 +34,9 @@ Menu:
 	createAccount(vault)
 }
 
-func getMenu() int {
-	var variant int
-	fmt.Println("Choose variant")
-	fmt.Println("1. Create an account")
-	fmt.Println("2. Search an account")
-	fmt.Println("3. Delete an account")
-	fmt.Println("4. Exit")
-	fmt.Scanln(&variant)
-	return variant
-}
 
 func findAccount(vault *account.VaultWithDb) {
-	url := prompData("Enter url for search")
+	url := prompData([]string{"Enter url for search"})
 	accounts := vault.FindAccountsByUrl(url)
 	if len(accounts) == 0 {
 		color.Red("No accounts are found")
@@ -52,7 +47,7 @@ func findAccount(vault *account.VaultWithDb) {
 }
 
 func deleteAccount(vault *account.VaultWithDb) {
-	url := prompData("Enter url for search")
+	url := prompData([]string{"Enter url for search"})
 	isDeleted := vault.DeleteAccountByUrl(url)
 	if isDeleted {
 		color.Green("Deleted")
@@ -63,9 +58,9 @@ func deleteAccount(vault *account.VaultWithDb) {
 func createAccount(vault *account.VaultWithDb) {
 	// files.WriteFile("Hello i am file", "file.txt")
 	// files.ReadFile()
-	login := prompData("Enter your login")
-	password := prompData("Enter your password")
-	url := prompData("Enter your url")
+	login := prompData([]string{"Enter your login"})
+	password := prompData([]string{"Enter your password"})
+	url := prompData([]string{"Enter your url"})
 
 	myAccount, err := account.NewAccount(login, password, url)
 	if err != nil {
@@ -75,8 +70,14 @@ func createAccount(vault *account.VaultWithDb) {
 	vault.AddAccount(*myAccount)
 }
 
-func prompData(promp string) string {
-	fmt.Println(promp + ": ")
+func prompData[T any](promp []T) string {
+	for i, line := range promp {
+		if i == len(promp)-1 {
+			fmt.Printf("%v: ", line)
+		} else {
+			fmt.Println(line)
+		}
+	}
 	var res string
 	fmt.Scanln(&res)
 	return res
