@@ -3,26 +3,30 @@ package main
 import (
 	"demo/password/account"
 	"demo/password/files"
+	"demo/password/output"
 	"fmt"
+
+	"github.com/fatih/color"
 )
 
 func main() {
 	fmt.Println("Manager of passwords")
+	vault := account.NewVault(files.NewJsonDb("data.json"))
 Menu:
 	for {
 		variant := getMenu()
 		switch variant {
 		case 1:
-			createAccount()
+			createAccount(vault)
 		case 2:
-			findAccount()
+			findAccount(vault)
 		case 3:
-			deleteAccount()
+			deleteAccount(vault)
 		default:
 			break Menu
 		}
 	}
-	createAccount()
+	createAccount(vault)
 }
 
 func getMenu() int {
@@ -36,13 +40,27 @@ func getMenu() int {
 	return variant
 }
 
-func findAccount() {
-
+func findAccount(vault *account.VaultWithDb) {
+	url := prompData("Enter url for search")
+	accounts := vault.FindAccountsByUrl(url)
+	if len(accounts) == 0 {
+		color.Red("No accounts are found")
+	}
+	for _, account := range accounts {
+		account.Output()
+	}
 }
-func deleteAccount() {
 
+func deleteAccount(vault *account.VaultWithDb) {
+	url := prompData("Enter url for search")
+	isDeleted := vault.DeleteAccountByUrl(url)
+	if isDeleted {
+		color.Green("Deleted")
+	} else {
+		output.PrintError("Not found")
+	}
 }
-func createAccount() {
+func createAccount(vault *account.VaultWithDb) {
 	// files.WriteFile("Hello i am file", "file.txt")
 	// files.ReadFile()
 	login := prompData("Enter your login")
@@ -51,17 +69,10 @@ func createAccount() {
 
 	myAccount, err := account.NewAccount(login, password, url)
 	if err != nil {
-		fmt.Println("Invalid url or login")
+		output.PrintError("Invalid url or login")
 		return
 	}
-	vault := account.NewVault()
 	vault.AddAccount(*myAccount)
-	data, err := vault.ToBytes()
-	if err != nil {
-		fmt.Println("Could not convert to JSON")
-		return
-	}
-	files.WriteFile(data, "data.json")
 }
 
 func prompData(promp string) string {
