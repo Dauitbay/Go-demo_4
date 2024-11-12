@@ -19,6 +19,7 @@ Menu:
 			"2. Search an account",
 			"3. Delete an account",
 			"4. Exit",
+			"Choose the variant",
 		})
 		switch variant {
 		case "1":
