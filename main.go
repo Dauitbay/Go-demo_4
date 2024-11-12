@@ -3,6 +3,7 @@ package main
 import (
 	"demo/password/account"
 	"demo/password/files"
+	"demo/password/output"
 	"fmt"
 
 	"github.com/fatih/color"
@@ -56,7 +57,7 @@ func deleteAccount(vault *account.VaultWithDb) {
 	if isDeleted {
 		color.Green("Deleted")
 	} else {
-		color.Red("Not found")
+		output.PrintError("Not found")
 	}
 }
 func createAccount(vault *account.VaultWithDb) {
@@ -68,7 +69,7 @@ func createAccount(vault *account.VaultWithDb) {
 
 	myAccount, err := account.NewAccount(login, password, url)
 	if err != nil {
-		fmt.Println("Invalid url or login")
+		output.PrintError("Invalid url or login")
 		return
 	}
 	vault.AddAccount(*myAccount)

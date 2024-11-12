@@ -1,12 +1,11 @@
 package account
 
 import (
+	"demo/password/output"
 	"encoding/json"
 	"strings"
 
 	"time"
-
-	"github.com/fatih/color"
 )
 
 type Db interface {
@@ -38,7 +37,7 @@ func NewVault(db Db) *VaultWithDb {
 	var vault Vault
 	err = json.Unmarshal(file, &vault)
 	if err != nil {
-		color.Red("Could not unpack json file")
+		output.PrintError("Could not unpack json file")
 		return &VaultWithDb{
 			Vault: Vault{
 				Accounts:  []Account{},
@@ -97,7 +96,7 @@ func (vault *VaultWithDb) save() {
 	vault.UpdatedAt = time.Now()
 	data, err := vault.Vault.ToBytes()
 	if err != nil {
-		color.Red("Could not convert")
+		output.PrintError("Could not convert")
 	}
 	vault.db.Write(data)
 }
