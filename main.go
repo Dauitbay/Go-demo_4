@@ -2,51 +2,80 @@ package main
 
 import (
 	"demo/password/account"
+	"demo/password/encrypter"
 	"demo/password/files"
 	"demo/password/output"
 	"fmt"
+	"strings"
 
 	"github.com/fatih/color"
+	"github.com/joho/godotenv"
 )
+
+var menu = map[string]func(*account.VaultWithDb){
+	"1":createAccount,
+	"2":findAccountByUrl,
+	"3":findAccountByLogin,
+	"4":deleteAccount,
+}
 
 func main() {
 	fmt.Println("Manager of passwords")
-	vault := account.NewVault(files.NewJsonDb("data.json"))
+	err := godotenv.Load()
+	if err != nil{
+		output.PrintError("Could not find env file")
+	}
+	vault := account.NewVault(files.NewJsonDb("data.vault"), *encrypter.NewEncrypter())
 Menu:
 	for {
-		variant := getMenu()
-		switch variant {
-		case 1:
-			createAccount(vault)
-		case 2:
-			findAccount(vault)
-		case 3:
-			deleteAccount(vault)
-		default:
+		variant := prompData(
+			"1. Create an account",
+			"2. Search an account by Url",
+			"3. Search an account by Login",
+			"4. Delete an account",
+			"5. Exit",
+			"Choose the variant",
+		)
+		menuFunc := menu[variant]
+		if menuFunc == nil{
 			break Menu
 		}
+		menuFunc(vault)
+		// switch variant {
+		// case "1":
+		// 	createAccount(vault)
+		// case "2":
+		// 	findAccount(vault)
+		// case "3":
+		// 	deleteAccount(vault)
+		// default:
+		// 	break Menu
+		// }
 	}
-	createAccount(vault)
 }
 
-func getMenu() int {
-	var variant int
-	fmt.Println("Choose variant")
-	fmt.Println("1. Create an account")
-	fmt.Println("2. Search an account")
-	fmt.Println("3. Delete an account")
-	fmt.Println("4. Exit")
-	fmt.Scanln(&variant)
-	return variant
-}
 
-func findAccount(vault *account.VaultWithDb) {
+func findAccountByUrl(vault *account.VaultWithDb) {
 	url := prompData("Enter url for search")
-	accounts := vault.FindAccountsByUrl(url)
-	if len(accounts) == 0 {
+	accounts := vault.FindAccounts(url, func(acc account.Account, str string) bool {
+		return strings.Contains(acc.Url, str)
+	})
+	outPutResult(&accounts)
+}
+
+func findAccountByLogin(vault *account.VaultWithDb) {
+	login := prompData("Enter url for search")
+	accounts := vault.FindAccounts(login, func(acc account.Account, str string) bool {
+		return strings.Contains(acc.Login, str)
+	})
+	outPutResult(&accounts)
+}
+
+func outPutResult(accounts *[]account.Account){
+	if len(*accounts) == 0 {
 		color.Red("No accounts are found")
 	}
-	for _, account := range accounts {
+	for _, account := range *accounts {
 		account.Output()
 	}
 }
@@ -75,8 +104,14 @@ func createAccount(vault *account.VaultWithDb) {
 	vault.AddAccount(*myAccount)
 }
 
-func prompData(promp string) string {
-	fmt.Println(promp + ": ")
+func prompData(promp ...any) string {
+	for i, line := range promp {
+		if i == len(promp)-1 {
+			fmt.Printf("%v: ", line)
+		} else {
+			fmt.Println(line)
+		}
+	}
 	var res string
 	fmt.Scanln(&res)
 	return res
