@@ -25,7 +25,7 @@ func main() {
 	if err != nil{
 		output.PrintError("Could not find env file")
 	}
-	vault := account.NewVault(files.NewJsonDb("data.json"), *encrypter.NewEncrypter())
+	vault := account.NewVault(files.NewJsonDb("data.vault"), *encrypter.NewEncrypter())
 Menu:
 	for {
 		variant := prompData(

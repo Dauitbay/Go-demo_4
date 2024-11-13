@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"time"
+
+	"github.com/fatih/color"
 )
 
 type Db interface {
@@ -37,10 +39,12 @@ func NewVault(db Db, enc encrypter.Encrypter) *VaultWithDb {
 			enc: enc,
 		}
 	}
+	data := enc.Decrypt(file)
 	var vault Vault
-	err = json.Unmarshal(file, &vault)
+	err = json.Unmarshal(data, &vault)
+	color.Cyan("Found %d accounts", len(vault.Accounts))
 	if err != nil {
-		output.PrintError("Could not unpack json file")
+		output.PrintError("Could not unpack vault file")
 		return &VaultWithDb{
 			Vault: Vault{
 				Accounts:  []Account{},
@@ -100,8 +104,9 @@ func (vault *Vault) ToBytes() ([]byte, error) {
 func (vault *VaultWithDb) save() {
 	vault.UpdatedAt = time.Now()
 	data, err := vault.Vault.ToBytes()
+	encryptedData := vault.enc.Encrypt(data)
 	if err != nil {
 		output.PrintError("Could not convert")
 	}
-	vault.db.Write(data)
+	vault.db.Write(encryptedData)
 }
