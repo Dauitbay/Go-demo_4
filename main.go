@@ -2,6 +2,7 @@ package main
 
 import (
 	"demo/password/account"
+	"demo/password/encrypter"
 	"demo/password/files"
 	"demo/password/output"
 	"fmt"
@@ -24,7 +25,7 @@ func main() {
 	if err != nil{
 		output.PrintError("Could not find env file")
 	}
-	vault := account.NewVault(files.NewJsonDb("data.json"))
+	vault := account.NewVault(files.NewJsonDb("data.json"), *encrypter.NewEncrypter())
 Menu:
 	for {
 		variant := prompData(
