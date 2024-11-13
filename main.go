@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/joho/godotenv"
 )
 
 var menu = map[string]func(*account.VaultWithDb){
@@ -19,6 +20,10 @@ var menu = map[string]func(*account.VaultWithDb){
 
 func main() {
 	fmt.Println("Manager of passwords")
+	err := godotenv.Load()
+	if err != nil{
+		output.PrintError("Could not find env file")
+	}
 	vault := account.NewVault(files.NewJsonDb("data.json"))
 Menu:
 	for {
